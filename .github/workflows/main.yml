@@ -1,35 +1,52 @@
-name: Build OpenFros2
+name: Build Fros Firmware
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
-  build:
+  build-fros:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        repository: destan19/openfros
+        path: openfros
 
-      - name: Install Python 3.10
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3.10 python3.10-distutils
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8' # 选择一个合适的Python版本
 
-      - name: Clone OpenFros2
-        run: git clone https://github.com/destan19/openfros.git
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gzip subversion git-core diff patch unzip quilt libssl-dev libexpat-dev
 
-      - name: Update feeds
-        run: |
-          cd openfros
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
+    - name: Download and install feeds
+      run: |
+        cd openfros
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
 
-      - name: Build firmware
-        run: |
-          cd openfros
-          make V=s
+    - name: Compile firmware using menuconfig
+      run: |
+        cd openfros
+        make menuconfig # 可以选择配置
+        # 等待用户输入配置并保存退出
+        make -j$(nproc) V=s
+
+    - name: Compile firmware using build.sh (if exists)
+      run: |
+        cd openfros
+        if [ -f build.sh ]; then
+          ./build.sh
+        else
+          echo "build.sh script not found, skipping..."
+        fi
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: fros-firmware
+        path: openfros/bin/
