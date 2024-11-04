@@ -1,0 +1,35 @@
+name: Build OpenFros2
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential git
+
+      - name: Clone OpenFros2
+        run: git clone https://github.com/destan19/openfros.git
+
+      - name: Update feeds
+        run: |
+          cd openfros
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Build firmware
+        run: |
+          cd openfros
+          make V=s
