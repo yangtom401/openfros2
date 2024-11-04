@@ -20,8 +20,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gzip subversion git-core diff patch unzip quilt libssl-dev libexpat-dev
+          sudo apt-get update
+          sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gzip subversion git-core diffutils patch unzip quilt libssl-dev libexpat-dev
 
     - name: Download and install feeds
       run: |
