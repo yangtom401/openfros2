@@ -22,7 +22,9 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gzip subversion git-core diffutils patch unzip quilt libssl-dev libexpat-dev
-        sudo apt-get install -y antfs-mount kmod-xdp-sockets-diag bpf-headers meson ninja-host kmod-fs-ksmbd forked-daapd fxload upx-host bmx6 bmx6-json libfdt kmod-inet-diag kmod-nft-tproxy
+        
+        # 下面的包在标准仓库中找不到，需要找到合适的替代方法来安装它们
+        # sudo apt-get install -y antfs-mount kmod-xdp-sockets-diag bpf-headers meson ninja-host kmod-fs-ksmbd forked-daapd fxload upx-host bmx6 bmx6-json libfdt kmod-inet-diag kmod-nft-tproxy
 
     - name: Download and install feeds
       run: |
