@@ -10,7 +10,7 @@ arch_list="mt7620"
 #02-config.k2p      config.hiwifi_5962     config.redmi_ac2100  config.xiaomi_3gpro   config.xiaomi_ac2100  config.xiaomi_r3gv2   config.youhua_1200js
 #编译指定文件就可以设置以上配置名字，也可以自定义加入其他产品配置
 #config_product="x86_64"
-config_product=""
+config_product="psg1208"
 last_product="config"
 enable_last=0
 SRC_DISK="/dev/sdb"
