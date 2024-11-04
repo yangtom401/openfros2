@@ -2,7 +2,7 @@
 CONFIG_PATH="configs"
 #芯片方案目录名称，在$CONFIG_PATH目录中，可以指定编译哪个方案
 #arch_list="x86 mt7621 rock bcm53xx ipq40xx mt7620 mt7628"
-arch_list="x86"
+arch_list="mt7620"
 #指定编译的产品（不指定会编译$arch_list中的所有产品），不指定需要设置为""
 #产品名称加入config文件的名称即可，也可以添加部分字符串，支持模糊匹配
 #配置名称如下
