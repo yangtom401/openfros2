@@ -1,4 +1,4 @@
- name: Build PSG1208 Firmware
+   name: Build PSG1208 Firmware
 
    on:
      push:
