@@ -24,19 +24,39 @@ jobs:
       run: |
         ./build.sh
 
-    - name: Check for firmware files
-      id: check_files
+    - name: Check if bin/targets directory exists
+      id: check_dir
       run: |
-        echo "Firmware files found: $(find bin/targets/*/* -type f)"
+        if [ -d "bin/targets" ]; then
+          echo "Directory bin/targets exists."
+        else
+          echo "Directory bin/targets does not exist."
+          exit 1
+        fi
+
+    - name: List files in bin/targets
+      if: steps.check_dir.outcome == 'success'
+      run: |
+        ls -la bin/targets
+
+    - name: Find firmware files
+      if: steps.check_dir.outcome == 'success'
+      run: |
         firmware_files=$(find bin/targets/*/* -type f)
-        echo "firmware_files=$firmware_files" >> $GITHUB_ENV
+        if [ -z "$firmware_files" ]; then
+          echo "No firmware files found."
+          exit 1
+        else
+          echo "Firmware files found: $firmware_files"
+          echo "FIRMWARE_FILES=$firmware_files" >> $GITHUB_ENV
+        fi
 
     - name: Upload artifacts
+      if: env.FIRMWARE_FILES
       uses: actions/upload-artifact@v3
-      if: success() && ${{ env.firmware_files }}
       with:
         name: OpenFros-Firmware
-        path: ${{ env.firmware_files }}
+        path: ${{ env.FIRMWARE_FILES }}
         
     - name: Clean up
       run: |
