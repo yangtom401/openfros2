@@ -1,45 +1,40 @@
-name: Build Fros Firmware
+name: Build OpenFros Firmware
 
 on: [push, pull_request]
 
 jobs:
-  build-fros:
+  build-openfros:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-      with:
-        repository: destan19/openfros
-        path: openfros
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.8' # 选择一个合适的Python版本
 
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gzip subversion git-core diffutils patch unzip quilt libssl-dev libexpat-dev
+        sudo apt-get install -y build-essential libncurses-dev libssl-dev git subversion
         
-        # 下面的包在标准仓库中找不到，需要找到合适的替代方法来安装它们
-        # sudo apt-get install -y antfs-mount kmod-xdp-sockets-diag bpf-headers meson ninja-host kmod-fs-ksmbd forked-daapd fxload upx-host bmx6 bmx6-json libfdt kmod-inet-diag kmod-nft-tproxy
+        # Additional dependencies can be added here
+        # For example, if you need python3 and python3-pip:
+        # sudo apt-get install -y python3 python3-pip
 
     - name: Download and install feeds
       run: |
-        cd openfros
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
-    - name: Compile firmware
+    - name: Run build script
       run: |
-        cd openfros
-        make menuconfig
-        make -j$(nproc) V=s
+        ./build.sh
 
-    - name: Upload artifact
+    - name: Upload artifacts
       uses: actions/upload-artifact@v3
+      if: success()
       with:
-        name: fros-firmware
-        path: openfros/bin/
+        name: OpenFros-Firmware
+        path: bin/targets/*/*
+        
+    - name: Clean up
+      run: |
+        # Optional: Add any cleanup commands here
