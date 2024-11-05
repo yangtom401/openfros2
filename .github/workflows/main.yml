@@ -8,7 +8,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4  # 升级到最新版本
+      uses: actions/checkout@v3
 
     - name: Install dependencies
       run: |
@@ -28,14 +28,15 @@ jobs:
       id: check_files
       run: |
         echo "Firmware files found: $(find bin/targets/*/* -type f)"
-        echo "::set-output name=firmware_files::$(find bin/targets/*/* -type f)"
+        firmware_files=$(find bin/targets/*/* -type f)
+        echo "firmware_files=$firmware_files" >> $GITHUB_ENV
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
-      if: success() && steps.check_files.outputs.firmware_files
+      if: success() && ${{ env.firmware_files }}
       with:
         name: OpenFros-Firmware
-        path: ${{ steps.check_files.outputs.firmware_files }}
+        path: ${{ env.firmware_files }}
         
     - name: Clean up
       run: |
