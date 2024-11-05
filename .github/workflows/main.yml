@@ -14,6 +14,10 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential libncurses-dev libssl-dev git subversion
+        
+        # 如果需要其他依赖项，可以在这里添加
+        # 例如，如果需要 python3 和 python3-pip：
+        # sudo apt-get install -y python3 python3-pip
 
     - name: Download and install feeds
       run: |
@@ -24,40 +28,16 @@ jobs:
       run: |
         ./build.sh
 
-    - name: Check if bin/targets directory exists
-      id: check_dir
-      run: |
-        if [ -d "bin/targets" ]; then
-          echo "Directory bin/targets exists."
-        else
-          echo "Directory bin/targets does not exist."
-          exit 1
-        fi
-
-    - name: List files in bin/targets
-      if: steps.check_dir.outcome == 'success'
-      run: |
-        ls -la bin/targets
-
-    - name: Find firmware files
-      if: steps.check_dir.outcome == 'success'
-      run: |
-        firmware_files=$(find bin/targets/*/* -type f)
-        if [ -z "$firmware_files" ]; then
-          echo "No firmware files found."
-          exit 1
-        else
-          echo "Firmware files found: $firmware_files"
-          echo "FIRMWARE_FILES=$firmware_files" >> $GITHUB_ENV
-        fi
+    - name: List build output
+      run: ls -R bin/targets
 
     - name: Upload artifacts
-      if: env.FIRMWARE_FILES
       uses: actions/upload-artifact@v3
+      if: success()
       with:
         name: OpenFros-Firmware
-        path: ${{ env.FIRMWARE_FILES }}
+        path: bin/targets/*/*
         
     - name: Clean up
       run: |
-        # Optional: Add any cleanup commands here
+        # 可选：在这里添加任何清理命令
