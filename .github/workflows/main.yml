@@ -1,61 +1,28 @@
-name: Build OpenWrt for MT7620 (PSG1218)
+name: Build and Install Feeds
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-    # Step 2: Set up Python
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.8'
-
-    # Step 3: Set up the build environment
-    - name: Set up OpenWrt build environment
+    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip re2c
+        sudo apt-get install -y build-essential
 
-    # Step 4: Ensure Python version is correct
-    - name: Check Python version
+    - name: Clone the repository
+      run: git clone https://github.com/destan19/openfros.git
+
+    - name: Update and install feeds
       run: |
-        python3 --version
-        python --version
+        cd openfros
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
 
-    # Step 5: Clean build environment
-    - name: Clean build environment
-      run: |
-        make clean
-
-    # Step 6: Run the build script
-    - name: Run build.sh script
-      run: |
-        chmod +x build.sh
-        ./build.sh
-
-    # Step 7: Check for generated files
-    - name: List generated files
-      run: |
-        echo "Listing files in ./release/"
-        ls -l ./release/
-
-    # Step 8: Upload the compiled firmware as an artifact
-    - name: Upload firmware
-      uses: actions/upload-artifact@v4
-      with:
-        name: firmware
-        path: ./release/
+    - name: Build project
+      run: ./build.sh
