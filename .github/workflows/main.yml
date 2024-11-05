@@ -8,16 +8,12 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4  # 升级到最新版本
 
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential libncurses-dev libssl-dev git subversion
-        
-        # Additional dependencies can be added here
-        # For example, if you need python3 and python3-pip:
-        # sudo apt-get install -y python3 python3-pip
 
     - name: Download and install feeds
       run: |
@@ -28,12 +24,18 @@ jobs:
       run: |
         ./build.sh
 
+    - name: Check for firmware files
+      id: check_files
+      run: |
+        echo "Firmware files found: $(find bin/targets/*/* -type f)"
+        echo "::set-output name=firmware_files::$(find bin/targets/*/* -type f)"
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
-      if: success()
+      if: success() && steps.check_files.outputs.firmware_files
       with:
         name: OpenFros-Firmware
-        path: bin/targets/*/*
+        path: ${{ steps.check_files.outputs.firmware_files }}
         
     - name: Clean up
       run: |
