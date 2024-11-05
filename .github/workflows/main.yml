@@ -1,4 +1,4 @@
-name: Build OpenWrt for MT7620 (PSG1218)
+name: Build Firmware
 
 on:
   push:
@@ -7,32 +7,36 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-    # Step 2: Set up the build environment
-    - name: Set up OpenWrt build environment
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip python3
+        sudo apt-get install -y build-essential
 
-    # Step 3: Run the build script
-    - name: Run build.sh script
+    - name: Install additional dependencies
       run: |
-        chmod +x build.sh
+        sudo apt-get install -y dfu-util libncurses5-dev gawk gettext unzip file libssl-dev wget python3
+
+    - name: Run build script
+      run: |
+        chmod +x ./build.sh
         ./build.sh
 
-    # Step 4: Upload the compiled firmware as an artifact
-    - name: Upload firmware
-      uses: actions/upload-artifact@v3
+    - name: Upload firmware artifacts
+      uses: actions/upload-artifact@v2
       with:
         name: firmware
-        path: bin/targets/
+        path: ./release/
