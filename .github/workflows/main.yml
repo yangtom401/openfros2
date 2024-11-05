@@ -18,33 +18,37 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Step 2: Set up the build environment
+    # Step 2: Set up Python
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.8'
+
+    # Step 3: Set up the build environment
     - name: Set up OpenWrt build environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip python3.8 python3.8-venv python3.8-dev
-        sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
-        sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+        sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip
 
-    # Step 3: Ensure Python version is correct
+    # Step 4: Ensure Python version is correct
     - name: Check Python version
       run: |
         python3 --version
         python --version
 
-    # Step 4: Run the build script
+    # Step 5: Run the build script
     - name: Run build.sh script
       run: |
         chmod +x build.sh
         ./build.sh
 
-    # Step 5: Check for generated files
+    # Step 6: Check for generated files
     - name: List generated files
       run: |
         echo "Listing files in ./release/"
         ls -l ./release/
 
-    # Step 6: Upload the compiled firmware as an artifact
+    # Step 7: Upload the compiled firmware as an artifact
     - name: Upload firmware
       uses: actions/upload-artifact@v4
       with:
