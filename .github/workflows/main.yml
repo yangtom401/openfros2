@@ -1,43 +1,38 @@
-name: Build OpenFros Firmware
+name: Build OpenWrt for MT7620 (PSG1218)
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  build-openfros:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    # Step 1: Checkout the repository
+    - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install dependencies
+    # Step 2: Set up the build environment
+    - name: Set up OpenWrt build environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential libncurses-dev libssl-dev git subversion
-        
-        # 如果需要其他依赖项，可以在这里添加
-        # 例如，如果需要 python3 和 python3-pip：
-        # sudo apt-get install -y python3 python3-pip
+        sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip python3
 
-    - name: Download and install feeds
+    # Step 3: Run the build script
+    - name: Run build.sh script
       run: |
-        ./scripts/feeds update -a
-        ./scripts/feeds install -a
-
-    - name: Run build script
-      run: |
+        chmod +x build.sh
         ./build.sh
 
-    - name: List build output
-      run: ls -R bin/targets
-
-    - name: Upload artifacts
+    # Step 4: Upload the compiled firmware as an artifact
+    - name: Upload firmware
       uses: actions/upload-artifact@v3
-      if: success()
       with:
-        name: OpenFros-Firmware
-        path: bin/targets/*/*
-        
-    - name: Clean up
-      run: |
-        # 可选：在这里添加任何清理命令
+        name: firmware
+        path: bin/targets/
