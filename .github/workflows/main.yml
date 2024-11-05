@@ -28,7 +28,7 @@ jobs:
     - name: Set up OpenWrt build environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip
+        sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc wget unzip re2c
 
     # Step 4: Ensure Python version is correct
     - name: Check Python version
@@ -36,19 +36,24 @@ jobs:
         python3 --version
         python --version
 
-    # Step 5: Run the build script
+    # Step 5: Clean build environment
+    - name: Clean build environment
+      run: |
+        make clean
+
+    # Step 6: Run the build script
     - name: Run build.sh script
       run: |
         chmod +x build.sh
         ./build.sh
 
-    # Step 6: Check for generated files
+    # Step 7: Check for generated files
     - name: List generated files
       run: |
         echo "Listing files in ./release/"
         ls -l ./release/
 
-    # Step 7: Upload the compiled firmware as an artifact
+    # Step 8: Upload the compiled firmware as an artifact
     - name: Upload firmware
       uses: actions/upload-artifact@v4
       with:
