@@ -33,7 +33,7 @@ jobs:
       run: ./build.sh
 
     - name: Upload firmware artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: firmware
         path: ./release
