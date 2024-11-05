@@ -1,53 +1,31 @@
-name: Build and Install Feeds
+ name: Build PSG1208 Firmware
 
-on: [push, pull_request]
+   on:
+     push:
+       branches:
+         - main
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+   jobs:
+     build:
+       runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+       steps:
+       - name: Checkout code
+         uses: actions/checkout@v2
 
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
+       - name: Set up the environment
+         run: |
+           sudo apt-get update
+           sudo apt-get install -y build-essential git
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential re2c ninja-build python3 python3-pip
+       - name: Clone OpenWRT source
+         run: |
+           git clone https://github.com/coolsnowwolf/lede.git
 
-    - name: Install specific Python packages
-      run: |
-        python3 -m pip install --upgrade pip
-        pip install numpy pandas requests
-
-    - name: Verify ninja installation
-      run: ninja --version
-
-    - name: Clone the repository
-      run: git clone https://github.com/destan19/openfros.git
-
-    - name: Update and install feeds
-      run: |
-        cd openfros
-        ./scripts/feeds update -a
-        ./scripts/feeds install -a
-
-    - name: Build project
-      run: |
-        cd openfros
-        chmod +x ./build.sh
-        ./build.sh
-
-    - name: Output build log
-      run: cat ./openfros/build.log
-
-    - name: Upload firmware artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: firmware
-        path: ./openfros/release
+       - name: Run build script
+         run: |
+           cd lede
+           ./scripts/feeds update -a
+           ./scripts/feeds install -a
+           # 如果您需要修改 build.sh 中的配置，请在这里进行
+           ./build.sh
