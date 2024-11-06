@@ -23,7 +23,7 @@ jobs:
 
     - name: Clone source code
       run: |
-        git clone https://github.com/yangtom401/openfros2.git
+        git clone https://github.com/yangtom401/openfros2
         cd openfros2
 
     - name: Update and install feeds
